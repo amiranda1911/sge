@@ -1,16 +1,17 @@
 package br.dev.amiranda.sge.domain.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "sge_tb_student")
 public class Student {
     @Id
@@ -21,7 +22,7 @@ public class Student {
     @Column(nullable = false)
     private Date birthDate;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Class> classes = new ArrayList<>();
 
 }
