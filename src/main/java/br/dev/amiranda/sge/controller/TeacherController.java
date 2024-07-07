@@ -1,5 +1,10 @@
+/**
+ * Controlador REST para gerenciar professores
+ * Implementação de um CRUD
+ */
 package br.dev.amiranda.sge.controller;
 
+import br.dev.amiranda.sge.domain.dto.TeacherDTO;
 import br.dev.amiranda.sge.domain.models.Teacher;
 import br.dev.amiranda.sge.service.TeacherService;
 import org.springframework.http.ResponseEntity;
@@ -8,47 +13,50 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/teachers")
 public class TeacherController {
     private final TeacherService service;
 
+
     public TeacherController(TeacherService service) {
         this.service = service;
+
     }
 
     @GetMapping
-    public ResponseEntity<List<Teacher>> list() {
+    public ResponseEntity<Set<TeacherDTO>> list() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Teacher> findById(@PathVariable Long id) {
+    public ResponseEntity<TeacherDTO> findById(@PathVariable Long id) {
 
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Teacher> save(@RequestBody Teacher teacher) {
-        Teacher teacherCreated = service.create(teacher);
+    public ResponseEntity<TeacherDTO> save(@RequestBody TeacherDTO teacherDTO) {
+        var teacherCreated = service.create(teacherDTO);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(teacherCreated.getId())
+                .buildAndExpand(teacherCreated.id())
                 .toUri();
 
         return ResponseEntity.created(location).body(teacherCreated);
     }
 
     @PutMapping
-    public ResponseEntity<Teacher> update(@RequestBody Teacher teacher) {
-        Teacher teacherUpdated = service.update(teacher);
+    public ResponseEntity<TeacherDTO> update(@RequestBody TeacherDTO teacherDTO) {
+        var teacherUpdated = service.update(teacherDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(teacherUpdated.getId())
+                .buildAndExpand(teacherUpdated.id())
                 .toUri();
 
         return ResponseEntity.created(location).body(teacherUpdated);
@@ -59,6 +67,5 @@ public class TeacherController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

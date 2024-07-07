@@ -1,11 +1,13 @@
 package br.dev.amiranda.sge.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +21,5 @@ public class Teacher {
     private String name;
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Class> classes;
+    private Set<SchoolClass> classes = new HashSet<>();
 }
