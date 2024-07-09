@@ -20,7 +20,7 @@ public class SchoolClass {
     @Column(nullable = false, length = 255)
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     private Teacher teacher;
 
     @JsonIgnoreProperties("classes")
