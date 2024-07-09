@@ -1,13 +1,14 @@
 package br.dev.amiranda.sge.service.impl;
 
+import br.dev.amiranda.sge.domain.dto.TeacherDTO;
 import br.dev.amiranda.sge.domain.models.Teacher;
 import br.dev.amiranda.sge.domain.repositories.TeacherRepository;
 import br.dev.amiranda.sge.service.TeacherService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -18,31 +19,32 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Teacher findById(Long id) {
+    public TeacherDTO findById(Long id) {
         var teacher = repository.findById(id).orElse(null);
         if(teacher == null)
             throw new NoSuchElementException("Element not Found");
-        return teacher;
+        return new TeacherDTO(teacher);
     }
 
     @Override
-    public List<Teacher> findAll() {
+    public Set<TeacherDTO> findAll() {
         var teachers = repository.findAll();
-        return teachers;
+        return teachers.stream().map(TeacherDTO::new)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public Teacher create(Teacher teacher) {
-        if (repository.existsById(teacher.getId()))
+    public TeacherDTO create(TeacherDTO teacherDTO) {
+        if (repository.existsById(teacherDTO.id()))
             throw new IllegalArgumentException("Teacher already exists!");
-        return save(teacher);
+        return save(teacherDTO);
     }
 
     @Override
-    public Teacher update(Teacher teacher) {
-        if (!repository.existsById(teacher.getId()))
+    public TeacherDTO update(TeacherDTO teacherDTO) {
+        if (!repository.existsById(teacherDTO.id()))
             throw new IllegalArgumentException("Teacher does not exist!");
-        return save(teacher);
+        return save(teacherDTO);
     }
 
     @Override
@@ -53,8 +55,12 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
 
-    private Teacher save(Teacher teacher) {
+    private TeacherDTO save(TeacherDTO teacherDTO) {
+        var teacher = new Teacher();
+        teacher.setId(teacherDTO.id());
+        teacher.setName(teacherDTO.name());
+
         var teacherCreated = repository.save(teacher);
-        return teacherCreated;
+        return new TeacherDTO(teacherCreated);
     }
 }

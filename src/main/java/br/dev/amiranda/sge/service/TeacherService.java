@@ -1,13 +1,13 @@
 package br.dev.amiranda.sge.service;
 
-import br.dev.amiranda.sge.domain.models.Teacher;
+import br.dev.amiranda.sge.domain.dto.TeacherDTO;
 
-import java.util.List;
+import java.util.Set;
 
 public interface TeacherService {
-    Teacher findById(Long id);
-    List<Teacher> findAll();
-    Teacher create(Teacher student);
-    Teacher update(Teacher student);
+    TeacherDTO findById(Long id);
+    Set<TeacherDTO> findAll();
+    TeacherDTO create(TeacherDTO teacherDTO);
+    TeacherDTO update(TeacherDTO teacherDTO);
     void delete(Long id);
 }

@@ -12,14 +12,26 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "sge_tb_teacher")
-public class Teacher {
+@Entity(name = "sge_tb_class")
+public class SchoolClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, length = 255)
     private String name;
 
-    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<SchoolClass> classes = new HashSet<>();
+    @ManyToOne
+    private Teacher teacher;
+
+    @JsonIgnoreProperties("classes")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sge_tb_student_class",
+            joinColumns = @JoinColumn(name = "class_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+
+    private Set<Student> students = new HashSet<>();
+
+
 }
