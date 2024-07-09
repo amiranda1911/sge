@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### SEEDS ###
+src/main/java/br/dev/amiranda/sge/utils/Seeds.java

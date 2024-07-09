@@ -4,85 +4,96 @@
  */
 package br.dev.amiranda.sge.controller;
 
-import br.dev.amiranda.sge.domain.models.Class;
-import br.dev.amiranda.sge.domain.models.Teacher;
-import br.dev.amiranda.sge.service.ClassService;
+import br.dev.amiranda.sge.domain.dto.SchoolClassDTO;
+import br.dev.amiranda.sge.domain.models.SchoolClass;
+import br.dev.amiranda.sge.service.SchoolClassService;
+import br.dev.amiranda.sge.service.StudentService;
 import br.dev.amiranda.sge.service.TeacherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/classes")
 public class ClassController {
-    private final ClassService service;
-
-    private final TeacherService teacherService;
+    private final SchoolClassService service;
+    private final StudentService studentService;
 
     /**
      *
      * @param service Service de controle das Classes
-     * @param teacherService Service de controle de professores
+     * @param  studentService Service de controle de estudantes
      */
-    public ClassController(ClassService service, TeacherService teacherService) {
+    public ClassController(SchoolClassService service, TeacherService teacherService, StudentService studentService) {
         this.service = service;
-        this.teacherService = teacherService;
+        this.studentService = studentService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Class>> list() {
+    public ResponseEntity<Set<SchoolClassDTO>> list() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Class> findById(@PathVariable Long id) {
+    public ResponseEntity<SchoolClassDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Class> save(@RequestBody Class _class) {
-        Class classCreated = service.create(_class);
+    public ResponseEntity<SchoolClassDTO> save(@RequestBody SchoolClassDTO schoolClassDTO) {
+        SchoolClassDTO schoolClassCreated = service.create(schoolClassDTO);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(classCreated.getId())
+                .buildAndExpand(schoolClassCreated.id())
                 .toUri();
 
-        return ResponseEntity.created(location).body(classCreated);
+        return ResponseEntity.created(location).body(schoolClassCreated);
     }
 
     @PutMapping
-    public ResponseEntity<Class> update(@RequestBody Class _class) {
-        Class classUpdated = service.update(_class);
+    public ResponseEntity<SchoolClassDTO> update(@RequestBody SchoolClassDTO schoolClassDTO) {
+        SchoolClassDTO schoolClassUpdated = service.update(schoolClassDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(classUpdated.getId())
+                .buildAndExpand(schoolClassUpdated.id())
                 .toUri();
 
-        return ResponseEntity.created(location).body(classUpdated);
+        return ResponseEntity.created(location).body(schoolClassUpdated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Class> delete(@PathVariable Long id) {
+    public ResponseEntity<SchoolClass> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/teacher/{id}")
-    public ResponseEntity<Class> addClass(@PathVariable Long id, @RequestBody Class _class) {
-        Teacher teacher = this.teacherService.findById(id);
-        _class.setTeacher(teacher);
-        var classUpdated = this.service.update(_class);
+    @PutMapping("/{id}/teacher/{teacherId}")
+    public ResponseEntity<SchoolClassDTO> addTeacher(@PathVariable Long id, @PathVariable Long teacherId) {
+        var schoolClassUpdated = this.service.addTeacher(id, teacherId);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(classUpdated.getId())
+                .buildAndExpand(schoolClassUpdated.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(schoolClassUpdated);
+    }
+
+    @PutMapping("{classId}/student/{studentId}")
+    public ResponseEntity<SchoolClassDTO> addStudent(@PathVariable Long classId, @PathVariable Long studentId) {
+        var classUpdated = this.service.addStudent(classId, studentId);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(classUpdated.id())
                 .toUri();
 
         return ResponseEntity.created(location).body(classUpdated);

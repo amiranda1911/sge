@@ -1,13 +1,12 @@
 package br.dev.amiranda.sge.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +21,9 @@ public class Student {
     @Column(nullable = false)
     private Date birthDate;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<Class> classes = new ArrayList<>();
+
+
+    @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
+    private Set<SchoolClass> classes = new HashSet<>();
 
 }
